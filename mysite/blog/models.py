@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from taggit.managers import TaggableManager
 
 
 # Custom model manager to filter published posts
@@ -41,6 +42,8 @@ class Post(models.Model):
     objects = models.Manager()
     # Use our custom manager
     published = PublishedManager()
+    # Taggit
+    tags = TaggableManager()
 
     class Meta:
         # default sort results in publish DESC order
