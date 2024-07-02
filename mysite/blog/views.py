@@ -1,3 +1,4 @@
+from django.contrib.postgres.search import SearchVector
 from django.core.mail import send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count
@@ -7,11 +8,33 @@ from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 from taggit.models import Tag
 
-from .forms import CommentForm, EmailPostForm
+from .forms import CommentForm, EmailPostForm, SearchForm
 from .models import Post
 
 
-# accept POST only otherwise throw 405 error
+# Search
+def post_search(request):
+    form = SearchForm()
+    query = None
+    results = []
+
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            # Search in title and body columns using SearchVector
+            results = (Post.published.annotate(
+                search=SearchVector('title', 'body')
+            ).filter(search=query))
+
+    return render(request, 'blog/post/search.html', {
+        'form': form,
+        'query': query,
+        'results': results
+    })
+
+
+# Accept POST only otherwise throw 405 error
 @require_POST
 def post_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
