@@ -3,6 +3,14 @@ from django.db import models
 from django.utils import timezone
 
 
+# Custom model manager to filter published posts
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return (
+            super().get_queryset().filter(status=Post.Status.PUBLISHED)
+        )
+
+
 class Post(models.Model):
     # Enum class
     class Status(models.TextChoices):
@@ -24,6 +32,11 @@ class Post(models.Model):
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(
         max_length=2, choices=Status, default=Status.DRAFT)
+
+    # The default model manager
+    objects = models.Manager()
+    # Use our custom manager
+    published = PublishedManager()
 
     class Meta:
         # default sort results in publish DESC order
