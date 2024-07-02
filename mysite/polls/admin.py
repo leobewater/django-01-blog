@@ -24,6 +24,9 @@ class QuestionAdmin(admin.ModelAdmin):
     # add columns to listing table
     list_display = ["question_text", "pub_date", "was_published_recently"]
 
+    # filter
+    list_filter = ["pub_date"]
+
 
 admin.site.register(Question, QuestionAdmin)
 # admin.site.register(Choice)
