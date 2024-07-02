@@ -19,3 +19,10 @@ def total_posts():
 def show_latest_posts(count=5):
     latest_posts = Post.published.order_by('-publish')[:count]
     return {'latest_posts': latest_posts}
+
+
+# Create a simple template tag that returns a value. We will store the result in a variable that can be reused, rather than outputting it directly. We will create a tag to display the most commented posts.
+@register.simple_tag
+def get_most_commented_posts(count=5):
+    # build a QuerySet using the annotate() function to aggregate the total number of comments for each post.
+    return Post.published.annotate(total_comments=Count('comments')).order_by('-total_comments')[:count]
