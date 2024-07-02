@@ -20,7 +20,9 @@ class Post(models.Model):
         PUBLISHED = 'PB', 'Published'
 
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250)
+    # add unique key with slug and publish columns
+    slug = models.SlugField(max_length=250, unique_for_date='publish')
+
     # many-to-one relationship
     # related_name to specify the name of the reverse relationship, from User to Post such as user.blog_posts
     author = models.ForeignKey(
