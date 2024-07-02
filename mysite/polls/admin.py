@@ -21,6 +21,9 @@ class QuestionAdmin(admin.ModelAdmin):
     ]
     inlines = [ChoiceInline]
 
+    # add columns to listing table
+    list_display = ["question_text", "pub_date", "was_published_recently"]
+
 
 admin.site.register(Question, QuestionAdmin)
 # admin.site.register(Choice)
