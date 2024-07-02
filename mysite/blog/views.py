@@ -97,6 +97,21 @@ def post_detail(request, year, month, day, post):
     #     post = Post.published.get(id=id)
     # except Post.DoesNotExist:
     #     raise Http404("No Post found.")
-    post = get_object_or_404(Post, status=Post.Status.PUBLISHED,
-                             slug=post, publish__year=year, publish__month=month, publish__day=day,)
-    return render(request, 'blog/post/detail.html', {'post': post})
+    post = get_object_or_404(Post,
+                             status=Post.Status.PUBLISHED,
+                             slug=post,
+                             publish__year=year,
+                             publish__month=month,
+                             publish__day=day,
+                             )
+
+    # List of active comments for this post
+    comments = post.comments.filter(active=True)
+    # Form for users to comment
+    form = CommentForm()
+
+    return render(request, 'blog/post/detail.html', {
+        'post': post,
+        'comments': comments,
+        'form': form,
+    })
