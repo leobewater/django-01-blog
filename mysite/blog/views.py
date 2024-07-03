@@ -22,8 +22,17 @@ def post_search(request):
         form = SearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
-            # Search in title and body columns using SearchVector
-            search_vector = SearchVector('title', 'body')
+
+            # Search in title and body columns using SearchVector with stop words based on defined language
+            # search_vector = SearchVector('title', 'body', config='spanish')
+            search_vector = SearchVector(
+                'title', weight='A') + SearchVector('body', weight='B')
+
+            # SearchQuery remove any stop words such as "a", "an", "of"...
+            '''
+            https://github.com/postgres/postgres/blob/master/src/backend/snowball/stopwords/spanish.stop
+            '''
+            # search_query = SearchQuery(query, config='spanish')
             search_query = SearchQuery(query)
 
             # Use SearchRank, ranking by number of occurrences of the search term
@@ -31,7 +40,8 @@ def post_search(request):
                 search=search_vector,
                 rank=SearchRank(search_vector, search_query)
             )
-                .filter(search=query)
+                # .filter(search=query)
+                .filter(rank__gte=0.3)
                 .order_by('-rank')
             )
 
