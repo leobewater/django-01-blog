@@ -1,4 +1,9 @@
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchRank,
+    SearchVector,
+    TrigramSimilarity,
+)
 from django.core.mail import send_mail
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count
@@ -41,11 +46,13 @@ def post_search(request):
 
             # Use SearchRank, ranking by number of occurrences of the search term
             results = (Post.published.annotate(
+                similarity=TrigramSimilarity('title', query),
                 search=search_vector,
                 rank=SearchRank(search_vector, search_query)
             )
                 # .filter(search=query)
-                .filter(rank__gte=0.3)
+                # .filter(rank__gte=0.3)
+                .filter(similarity__gt=0.1)
                 .order_by('-rank')
             )
 
