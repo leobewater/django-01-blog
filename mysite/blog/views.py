@@ -25,10 +25,14 @@ def post_search(request):
 
             # Search in title and body columns using SearchVector with stop words based on defined language
             # search_vector = SearchVector('title', 'body', config='spanish')
+
+            """
+            In the preceding code, we apply different weights to the search vectors built using the title and body fields. The default weights are D, C, B, and A, and they refer to the numbers 0.1, 0.2, 0.4, and 1.0, respectively. We apply a weight of 1.0 to the title search vector (A) and a weight of 0.4 to the body vector (B). Title matches will prevail over body content matches. We filter the results to display only the ones with a rank higher than 0.3.
+            """
             search_vector = SearchVector(
                 'title', weight='A') + SearchVector('body', weight='B')
 
-            # SearchQuery remove any stop words such as "a", "an", "of"...
+            # SearchQuery removes any stop words such as "a", "an", "of"...
             '''
             https://github.com/postgres/postgres/blob/master/src/backend/snowball/stopwords/spanish.stop
             '''
